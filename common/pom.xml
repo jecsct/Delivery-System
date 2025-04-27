@@ -16,4 +16,12 @@
 
     <packaging>jar</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>3.3.5</version>
+        </dependency>
+    </dependencies>
+
 </project>

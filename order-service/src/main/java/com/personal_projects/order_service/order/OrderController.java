@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -29,6 +26,9 @@ public class OrderController {
         return orderService.getOrders();
     }
 
-//    @PostMapping
+    @PostMapping
+    public void createOrder(@RequestBody Order order){
+        orderService.createOrder(order);
+    }
 
 }
