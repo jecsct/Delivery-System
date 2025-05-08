@@ -20,6 +20,12 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("{id}")
+    public Order getOrderById(@PathVariable("id") Long orderId){
+        System.out.println("[JOAO]: Received request for Order by id: " + orderId);
+        return orderService.getAllOrderById(orderId);
+    }
+
     @PostMapping
     public void createOrder(@RequestBody Order order){
         orderService.createOrder(order);

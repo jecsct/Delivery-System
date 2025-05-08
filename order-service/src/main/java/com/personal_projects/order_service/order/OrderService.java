@@ -25,9 +25,15 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    public Order getAllOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalStateException(orderId + "not found"));
+    }
+
     public void createOrder(Order order) {
         System.out.println("[LOG] Sent message to kafka: " + order.toString());
         kafkaTemplate.send(ORDERS_TOPIC, order.toString());
         orderRepository.save(order);
     }
+
 }
