@@ -1,13 +1,7 @@
 package com.personal_projects.order_service.order;
-import com.personal_projects.common.Enums.OrderStatus;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,7 +17,7 @@ public class OrderController {
 
     @GetMapping()
     public List<Order> getOrders(){
-        return orderService.getOrders();
+        return orderService.getAllOrders();
     }
 
     @PostMapping
