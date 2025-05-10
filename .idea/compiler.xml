@@ -18,6 +18,7 @@
         </processorPath>
         <module name="order-service" />
         <module name="payment-service" />
+        <module name="shipping-service" />
       </profile>
     </annotationProcessing>
   </component>
