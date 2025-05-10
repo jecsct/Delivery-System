@@ -33,7 +33,7 @@ public class OrderController {
      *
      * @return a list of {@link Order} objects
      */
-    @Operation(summary = "Get all orders")
+    @Operation(summary = "Retrieves a list of all existing orders.")
     @GetMapping()
     public List<Order> getOrders(){
         return orderService.getAllOrders();
@@ -46,7 +46,7 @@ public class OrderController {
      * @return the {@link Order} object with the specified ID
      * "@throws OrderNotFoundException" if no order exists with the given ID (if applicable)
      */
-    @Operation(summary = "Get order by ID")
+    @Operation(summary = "Retrieves a specific order by its ID.")
     @GetMapping("{id}")
     public Order getOrderById(@PathVariable("id") Long orderId){
         logger.info("Received request for Order by id: {} ", orderId);

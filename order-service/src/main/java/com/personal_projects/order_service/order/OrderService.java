@@ -67,7 +67,7 @@ public class OrderService {
      */
     public void createOrder(Order order) {
         logger.info("Creating order: {}", order);
-//        kafkaTemplate.send(ORDERS_TOPIC, order.toString());
+        kafkaTemplate.send(ORDERS_TOPIC, order.toString());
         logger.info("Order published to Kafka topic: {}", ORDERS_TOPIC);
         orderRepository.save(order);
         logger.info("Order saved to the database");
