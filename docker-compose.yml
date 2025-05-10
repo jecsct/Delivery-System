@@ -1,6 +1,5 @@
-version: '3.8'
 services:
-  db:
+  postgresdb:
     image: postgres:latest
     container_name: postgres-orders
     restart: unless-stopped
@@ -12,10 +11,20 @@ services:
       POSTGRES_USER: admin_joao
       PGDATA: /data/postgres
     volumes:
-      - db:/data/postgres
+      - postgresdb:/data/postgres
+#  mongodb:
+#    image: mongodb/mongodb-community-server:6.0-ubi8
+#    container_name: mongodb-payments-service
+#    environment:
+#      - MONGO_INITDB_ROOT_USERNAME=admin_joao
+#      - MONGO_INITDB_ROOT_PASSWORD=admin_joao
+#    volumes:
+#      - type: bind
+#        source: ./data
+#        target: /data/db
 networks:
-  db:
+  postgresdb:
     driver: bridge
 
 volumes:
-  db:
+  postgresdb:

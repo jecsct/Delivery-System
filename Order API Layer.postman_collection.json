@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "de8f20d5-59a0-4550-a1a8-d3ed2b7a9c0c",
+		"name": "Order API Layer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44438381",
+		"_collection_link": "https://lunar-trinity-199584.postman.co/workspace/Jo%C3%A3o-Travassos's-Workspace~dacde9ab-1958-45cc-8455-9de03faf6567/collection/44438381-de8f20d5-59a0-4550-a1a8-d3ed2b7a9c0c?action=share&source=collection_link&creator=44438381"
+	},
+	"item": [
+		{
+			"name": "Get All Orders",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/v1/order",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order By Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/v1/order/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"order",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerName\": \"{{$randomFullName}}\",\r\n    \"productName\": \"Product{{$randomInt}}\",\r\n    \"quantity\": {{$randomInt}},\r\n    \"price\": {{$randomPrice}},\r\n    \"totalAmount\": {{$randomPrice}},\r\n    \"status\": \"CREATED\",\r\n    \"createdAt\": \"2025-04-27T14:30:45.123456\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "localhost:8081/api/v1/order",
+			"type": "default"
+		}
+	]
+}
