@@ -10,8 +10,8 @@ import static com.personal_projects.common.Configs.KafkaConfigs.ORDERS_TOPIC;
 @Configuration
 public class KafkaTopicConfig {
 
-//    @Bean
-//    public NewTopic orderServiceTopic() {
-//        return TopicBuilder.name(ORDERS_TOPIC).build();
-//    }
+    @Bean
+    public NewTopic orderServiceTopic() {
+        return TopicBuilder.name(ORDERS_TOPIC).build();
+    }
 }

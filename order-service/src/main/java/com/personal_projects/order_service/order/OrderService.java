@@ -1,5 +1,10 @@
 package com.personal_projects.order_service.order;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.personal_projects.order_service.data.dto.OrderRequest;
+import com.personal_projects.order_service.data.entity.Order;
+import com.personal_projects.order_service.util.OrderMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -26,10 +31,10 @@ public class OrderService {
      * Constructs the OrderService with dependencies.
      *
      * @param orderRepository the repository to perform CRUD operations
-     * @param kafkaTemplate the Kafka template used to send messages
+     * @param kafkaTemplate   the Kafka template used to send messages
      */
     public OrderService(OrderRepository orderRepository,
-            KafkaTemplate<String, String> kafkaTemplate) {
+                        KafkaTemplate<String, String> kafkaTemplate) {
         this.orderRepository = orderRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
@@ -39,7 +44,7 @@ public class OrderService {
      *
      * @return a list of all {@link Order} objects
      */
-    public List<Order> getAllOrders(){
+    public List<Order> getAllOrders() {
         logger.info("Fetching all orders from the database");
         return orderRepository.findAll();
     }
@@ -61,16 +66,17 @@ public class OrderService {
     }
 
     /**
-     * Creates a new order, saves it in the database, and publishes it to Kafka.
+     * Creates and saves an order from the request, then publishes it to Kafka.
      *
-     * @param order the {@link Order} to be created
+     * @param orderRequest the order creation request
      */
-    public void createOrder(Order order) {
-        logger.info("Creating order: {}", order);
-        kafkaTemplate.send(ORDERS_TOPIC, order.toString());
-        logger.info("Order published to Kafka topic: {}", ORDERS_TOPIC);
-        orderRepository.save(order);
+    public void createOrder(OrderRequest orderRequest) {
+        logger.info("Creating order: {}", orderRequest);
+        Order order = orderRepository.save(OrderMapper.toOrder(orderRequest));
         logger.info("Order saved to the database");
+        logger.debug("Order created: {}", order);
+        kafkaTemplate.send(ORDERS_TOPIC, OrderMapper.toOrderEvent(order).toString());
+        logger.info("Order published to Kafka topic: {}", ORDERS_TOPIC);
     }
 
 }

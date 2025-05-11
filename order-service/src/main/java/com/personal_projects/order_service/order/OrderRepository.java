@@ -1,5 +1,6 @@
 package com.personal_projects.order_service.order;
 
+import com.personal_projects.order_service.data.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

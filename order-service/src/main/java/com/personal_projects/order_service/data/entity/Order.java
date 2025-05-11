@@ -1,4 +1,4 @@
-package com.personal_projects.order_service.order;
+package com.personal_projects.order_service.data.entity;
 
 import com.personal_projects.common.Enums.OrderStatus;
 import jakarta.persistence.*;
