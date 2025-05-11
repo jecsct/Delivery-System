@@ -2,6 +2,7 @@ package com.personal_projects.order_service.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.personal_projects.common.Events.OrderEvent;
 import com.personal_projects.order_service.data.dto.OrderRequest;
 import com.personal_projects.order_service.data.entity.Order;
 import com.personal_projects.order_service.util.OrderMapper;
@@ -24,7 +25,7 @@ public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final OrderRepository orderRepository;
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
 
     /**
@@ -34,7 +35,7 @@ public class OrderService {
      * @param kafkaTemplate   the Kafka template used to send messages
      */
     public OrderService(OrderRepository orderRepository,
-                        KafkaTemplate<String, String> kafkaTemplate) {
+                        KafkaTemplate<String, OrderEvent> kafkaTemplate) {
         this.orderRepository = orderRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
@@ -75,7 +76,7 @@ public class OrderService {
         Order order = orderRepository.save(OrderMapper.toOrder(orderRequest));
         logger.info("Order saved to the database");
         logger.debug("Order created: {}", order);
-        kafkaTemplate.send(ORDERS_TOPIC, OrderMapper.toOrderEvent(order).toString());
+        kafkaTemplate.send(ORDERS_TOPIC, OrderMapper.toOrderEvent(order));
         logger.info("Order published to Kafka topic: {}", ORDERS_TOPIC);
     }
 

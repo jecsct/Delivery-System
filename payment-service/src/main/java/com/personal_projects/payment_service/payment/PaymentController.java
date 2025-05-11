@@ -1,6 +1,9 @@
 package com.personal_projects.payment_service.payment;
 
 
+import com.personal_projects.common.Enums.PaymentStatus;
+import com.personal_projects.payment_service.data.dto.PaymentRequest;
+import com.personal_projects.payment_service.data.entity.Payment;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,21 +38,17 @@ public class PaymentController {
     }
 
     /**
-     * Processes a payment.
+     * Processes a pending payment using the associated order ID and payment details.
      *
-     * @param paymentId the {@link Payment}
+     * @param orderId    The ID of the order whose payment is to be processed.
+     * @param paymentRequest The payment details submitted by the user.
      */
-    @Operation(summary = "")
+    @Operation(summary = "Process a pending payment using the associated order ID and payment details")
     @PostMapping("{id}")
-    public void processPayment(@PathVariable("id") Long paymentId){
-//        paymentService.processPayment(paymentId);
-        paymentService.savePayment(Payment.builder()
-                .clientId("client-dfehjkfgwn")
-                .amount(199.99)
-                .currency("EUR")
-                .status(PaymentStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build());
+    public void processPayment(
+            @PathVariable("id") long orderId,
+            @RequestBody PaymentRequest paymentRequest) {
+        paymentService.processPayment(orderId, paymentRequest);
     }
 
 }

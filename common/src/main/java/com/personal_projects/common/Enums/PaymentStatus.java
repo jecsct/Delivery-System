@@ -1,4 +1,4 @@
-package com.personal_projects.payment_service.payment;
+package com.personal_projects.common.Enums;
 
 public enum PaymentStatus {
     PENDING,
