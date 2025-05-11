@@ -12,13 +12,18 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgresdb:/data/postgres
-#  mongodb:
-#    image: mongodb/mongodb-community-server:6.0-ubi8
-#    container_name: mongodb-payments-service
-#    environment:
-#      - MONGO_INITDB_ROOT_USERNAME=admin_joao
-#      - MONGO_INITDB_ROOT_PASSWORD=admin_joao
-#    volumes:
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-payments-service
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin_joao
+      MONGO_INITDB_ROOT_PASSWORD: admin_joao
+      MONGO_INITDB_DATABASE: payment-service-db
+    volumes:
+      - mongodb_data:/data/db
 #      - type: bind
 #        source: ./data
 #        target: /data/db
@@ -51,3 +56,4 @@ networks:
 
 volumes:
   postgresdb:
+  mongodb_data:
