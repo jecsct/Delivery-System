@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDERS_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_PAYMENT_REQUEST_TOPIC;
 
 
 /**
- * Kafka listener component that listens for order events and processes the payment accordingly.
+ * Kafka listener component for the Payment service.
  * <p>
- * This listener receives order events from Kafka topics and maps them to {@link Payment} entities.
- * It then saves the payment using the {@link PaymentService}. The listener method listens to
- * events from a specific Kafka topic and processes them asynchronously.
+ * Listens to incoming {@link OrderEvent} messages on the Kafka topic specified by {@code ORDER_PAYMENT_REQUEST_TOPIC}
+ * and delegates processing to the {@link PaymentService}.
+ * </p>
  */
 @Component
 public class PaymentKafkaListener {
@@ -23,9 +23,9 @@ public class PaymentKafkaListener {
     private final PaymentService paymentService;
 
     /**
-     * Constructor to inject the {@link PaymentService} dependency.
+     * Constructs a new {@code PaymentKafkaListener} with the provided {@link PaymentService}.
      *
-     * @param paymentService the service to handle payment operations
+     * @param paymentService the service responsible for handling payment logic
      */
     @Autowired
     public PaymentKafkaListener(final PaymentService paymentService) {
@@ -33,15 +33,19 @@ public class PaymentKafkaListener {
     }
 
     /**
-     * Listener method that processes the received order events from Kafka.
+     * Kafka listener method that is triggered whenever a new {@link OrderEvent} is published
+     * to the {@code ORDER_PAYMENT_REQUEST_TOPIC} Kafka topic.
      * <p>
-     * This method listens for incoming messages (order events) from a specified Kafka topic.
-     * Upon receiving an order event, it maps the event to a {@link Payment} object and saves it
-     * using the {@link PaymentService}.
+     * Converts the event into a {@code Payment} entity and persists it using {@link PaymentService}.
+     * </p>
      *
      * @param orderEvent the order event received from Kafka
      */
-    @KafkaListener(topics = ORDERS_TOPIC, groupId = "groupId", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(
+            topics = ORDER_PAYMENT_REQUEST_TOPIC,
+            groupId = "groupId",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     void listener(OrderEvent orderEvent) {
         System.out.println("Listener Received: " + orderEvent);
         paymentService.savePayment(PaymentMapper.toPayment(orderEvent));

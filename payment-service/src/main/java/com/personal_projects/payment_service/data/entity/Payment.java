@@ -77,4 +77,14 @@ public class Payment {
     public boolean isAmountMatching(double amount) {
         return this.amount == amount;
     }
+
+    public void completePayment(){
+        this.setStatus(PaymentStatus.COMPLETED);
+        this.setPaidAt(LocalDateTime.now());
+    }
+
+    public void failPayment() {
+        this.setStatus(PaymentStatus.FAILED);
+        this.setPaidAt(LocalDateTime.now());
+    }
 }

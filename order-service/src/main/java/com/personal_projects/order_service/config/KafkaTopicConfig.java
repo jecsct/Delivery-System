@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDERS_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_PAYMENT_REQUEST_TOPIC;
 
 @Configuration
 public class KafkaTopicConfig {
 
     @Bean
     public NewTopic orderServiceTopic() {
-        return TopicBuilder.name(ORDERS_TOPIC).build();
+        return TopicBuilder.name(ORDER_PAYMENT_REQUEST_TOPIC).build();
     }
 }

@@ -2,6 +2,7 @@ package com.personal_projects.order_service.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.personal_projects.common.Enums.OrderStatus;
 import com.personal_projects.common.Events.OrderEvent;
 import com.personal_projects.order_service.data.dto.OrderRequest;
 import com.personal_projects.order_service.data.entity.Order;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDERS_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_PAYMENT_REQUEST_TOPIC;
 
 /**
  * Service class for managing orders.
@@ -76,8 +77,20 @@ public class OrderService {
         Order order = orderRepository.save(OrderMapper.toOrder(orderRequest));
         logger.info("Order saved to the database");
         logger.debug("Order created: {}", order);
-        kafkaTemplate.send(ORDERS_TOPIC, OrderMapper.toOrderEvent(order));
-        logger.info("Order published to Kafka topic: {}", ORDERS_TOPIC);
+        kafkaTemplate.send(ORDER_PAYMENT_REQUEST_TOPIC, OrderMapper.toOrderEvent(order));
+        logger.info("Order published to Kafka topic: {}", ORDER_PAYMENT_REQUEST_TOPIC);
     }
 
+    /**
+     * Updates the status of an order by its ID.
+     * <p>
+     * Delegates to a custom repository query that performs a direct update in the database
+     * </p>
+     *
+     * @param orderId      the ID of the order to update
+     * @param orderStatus  the new status to assign to the order
+     */
+    public void updateOrderStatusById(long orderId, OrderStatus orderStatus) {
+        orderRepository.updateOrderStatusById(orderId, orderStatus);
+    }
 }
