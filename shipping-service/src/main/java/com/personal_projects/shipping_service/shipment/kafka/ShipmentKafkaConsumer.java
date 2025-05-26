@@ -1,7 +1,8 @@
-package com.personal_projects.order_service.order.kafka;
+package com.personal_projects.shipping_service.shipment.kafka;
 
 import com.personal_projects.common.Events.OrderEvent;
 import com.personal_projects.common.Events.OrderStatusUpdateEvent;
+import com.personal_projects.common.Events.ShipmentRequestEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,18 +17,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Kafka consumer configuration for the Order Service.
+ * Kafka consumer configuration for the Shipment service.
  * <p>
- * This class defines how the Order Service consumes {@link OrderStatusUpdateEvent}
- * messages from Kafka. It sets up deserializers, consumer properties, and
- * the listener container factory.
+ * Sets up the necessary beans to consume {@link ShipmentRequestEvent} messages from a Kafka topic.
+ * This configuration uses JSON deserialization to convert message payloads to Java objects.
  * </p>
  */
 @Configuration
-public class OrderKafkaConsumer {
+public class ShipmentKafkaConsumer {
 
     /**
-     * Kafka bootstrap servers, injected from application properties.
+     * Kafka bootstrap servers, injected from application.properties.
      */
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -49,32 +49,32 @@ public class OrderKafkaConsumer {
 
     /**
      * Configures the {@link ConsumerFactory} used to deserialize
-     * {@link OrderStatusUpdateEvent} messages from Kafka.
+     * {@link ShipmentRequestEvent} messages from Kafka.
      *
-     * @return a consumer factory for String keys and OrderStatusUpdateEvent values.
+     * @return a consumer factory for String keys and ShipmentRequestEvent values.
      */
-
-
     @Bean
-    public ConsumerFactory<String, OrderStatusUpdateEvent> consumerFactory() {
+    public ConsumerFactory<String, ShipmentRequestEvent> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
-                new JsonDeserializer<>(OrderStatusUpdateEvent.class)
+                new JsonDeserializer<>(ShipmentRequestEvent.class)
         );
     }
 
     /**
      * Configures the Kafka listener container factory that creates
-     * listener containers for processing Kafka messages concurrently.
+     * listener containers for processing {@link ShipmentRequestEvent} messages concurrently.
      *
      * @return a Kafka listener container factory.
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderStatusUpdateEvent> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, OrderStatusUpdateEvent> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, ShipmentRequestEvent> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ShipmentRequestEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
+
+
 }

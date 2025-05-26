@@ -3,6 +3,7 @@ package com.personal_projects.payment_service.payment;
 
 import com.personal_projects.payment_service.data.entity.Payment;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 

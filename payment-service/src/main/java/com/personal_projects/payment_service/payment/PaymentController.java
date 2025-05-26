@@ -44,9 +44,9 @@ public class PaymentController {
      * @param paymentRequest The payment details submitted by the user.
      */
     @Operation(summary = "Process a pending payment using the associated order ID and payment details")
-    @PostMapping("{id}")
+    @PostMapping("{order_id}")
     public void processPayment(
-            @PathVariable("id") long orderId,
+            @PathVariable("order_id") long orderId,
             @RequestBody PaymentRequest paymentRequest) {
         paymentService.processPayment(orderId, paymentRequest);
     }
