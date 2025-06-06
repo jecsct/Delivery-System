@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderRequest {
+public class OrderDTO {
     /** Name of the customer placing the order */
     private String customerName;
 

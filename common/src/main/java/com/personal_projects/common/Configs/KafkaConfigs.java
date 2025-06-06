@@ -1,8 +1,8 @@
 package com.personal_projects.common.Configs;
 
 public class KafkaConfigs {
-    public static final String ORDER_PAYMENT_REQUEST_TOPIC = "order-payment-request-topic";
-    public static final String ORDER_STATUS_UPDATES_TOPIC = "order-status-updates-topic";
+    public static final String ORDER_TOPIC = "order-topic";
+    public static final String PAYMENT_TOPIC = "payment-topic";
 
-    public static final String SHIPMENT_REQUESTS_TOPIC = "order-status-updates-topic2";
+    public static final String SHIPMENT_TOPIC = "shipment-topic";
 }

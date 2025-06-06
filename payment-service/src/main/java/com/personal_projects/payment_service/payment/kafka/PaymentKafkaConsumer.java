@@ -72,7 +72,7 @@ public class PaymentKafkaConsumer {
      * @return a configured Kafka listener container factory
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> paymentKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, OrderEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());

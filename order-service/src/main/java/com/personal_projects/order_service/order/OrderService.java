@@ -1,10 +1,8 @@
 package com.personal_projects.order_service.order;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal_projects.common.Enums.OrderStatus;
 import com.personal_projects.common.Events.OrderEvent;
-import com.personal_projects.order_service.data.dto.OrderRequest;
+import com.personal_projects.order_service.data.dto.OrderDTO;
 import com.personal_projects.order_service.data.entity.Order;
 import com.personal_projects.order_service.util.OrderMapper;
 import org.slf4j.Logger;
@@ -14,7 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_PAYMENT_REQUEST_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_TOPIC;
+
 
 /**
  * Service class for managing orders.
@@ -26,7 +25,7 @@ public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final OrderRepository orderRepository;
-    private KafkaTemplate<String, OrderEvent> kafkaTemplate;
+    private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
 
     /**
@@ -70,15 +69,15 @@ public class OrderService {
     /**
      * Creates and saves an order from the request, then publishes it to Kafka.
      *
-     * @param orderRequest the order creation request
+     * @param orderDTO the order creation request
      */
-    public void createOrder(OrderRequest orderRequest) {
-        logger.info("Creating order: {}", orderRequest);
-        Order order = orderRepository.save(OrderMapper.toOrder(orderRequest));
+    public void createOrder(OrderDTO orderDTO) {
+        logger.info("Creating order: {}", orderDTO);
+        Order order = orderRepository.save(OrderMapper.toOrder(orderDTO));
         logger.info("Order saved to the database");
         logger.debug("Order created: {}", order);
-        kafkaTemplate.send(ORDER_PAYMENT_REQUEST_TOPIC, OrderMapper.toOrderEvent(order));
-        logger.info("Order published to Kafka topic: {}", ORDER_PAYMENT_REQUEST_TOPIC);
+        kafkaTemplate.send(ORDER_TOPIC, OrderMapper.toOrderEvent(order));
+        logger.info("Order published to Kafka topic: {}", ORDER_TOPIC);
     }
 
     /**

@@ -1,8 +1,7 @@
 package com.personal_projects.shipping_service.shipment.kafka;
 
-import com.personal_projects.common.Events.OrderEvent;
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
-import com.personal_projects.common.Events.ShipmentRequestEvent;
+import com.personal_projects.common.Events.PaymentEvent;
+import com.personal_projects.common.Events.ShipmentEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,26 +15,26 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * Kafka consumer configuration for the Shipment service.
- * <p>
- * Sets up the necessary beans to consume {@link ShipmentRequestEvent} messages from a Kafka topic.
- * This configuration uses JSON deserialization to convert message payloads to Java objects.
- * </p>
+ *
+ * <p>This configuration sets up Kafka consumers specifically for the {@link PaymentEvent} type.
+ * It defines the necessary beans and deserialization settings used for consuming messages from Kafka.</p>
  */
 @Configuration
 public class ShipmentKafkaConsumer {
 
     /**
-     * Kafka bootstrap servers, injected from application.properties.
+     * Kafka bootstrap servers address, injected from application properties.
      */
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     /**
-     * Creates a configuration map for Kafka consumer.
+     * Builds a map of configuration properties common to all Kafka consumers.
      *
-     * @return a map containing the Kafka consumer configuration properties.
+     * @return a map of Kafka consumer configuration properties
      */
     public Map<String, Object> consumerConfig() {
         Map<String, Object> props = new HashMap<>();
@@ -48,33 +47,30 @@ public class ShipmentKafkaConsumer {
     }
 
     /**
-     * Configures the {@link ConsumerFactory} used to deserialize
-     * {@link ShipmentRequestEvent} messages from Kafka.
+     * Creates a {@link ConsumerFactory} for consuming {@link PaymentEvent} messages.
      *
-     * @return a consumer factory for String keys and ShipmentRequestEvent values.
+     * @return a consumer factory configured for {@link PaymentEvent}
      */
     @Bean
-    public ConsumerFactory<String, ShipmentRequestEvent> consumerFactory() {
+    public ConsumerFactory<String, PaymentEvent> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
-                new JsonDeserializer<>(ShipmentRequestEvent.class)
+                new JsonDeserializer<>(PaymentEvent.class)
         );
     }
 
     /**
-     * Configures the Kafka listener container factory that creates
-     * listener containers for processing {@link ShipmentRequestEvent} messages concurrently.
+     * Creates a {@link ConcurrentKafkaListenerContainerFactory} for consuming {@link PaymentEvent} messages.
      *
-     * @return a Kafka listener container factory.
+     * @return a Kafka listener container factory for {@link PaymentEvent}
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, ShipmentRequestEvent> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ShipmentRequestEvent> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentEvent> shipmentKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PaymentEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
-
 
 }

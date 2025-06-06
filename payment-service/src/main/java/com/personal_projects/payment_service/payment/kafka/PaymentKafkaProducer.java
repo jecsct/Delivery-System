@@ -1,7 +1,7 @@
 package com.personal_projects.payment_service.payment.kafka;
 
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
-import com.personal_projects.common.Events.ShipmentRequestEvent;
+import com.personal_projects.common.Events.PaymentEvent;
+import com.personal_projects.common.Events.ShipmentEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +17,9 @@ import java.util.Map;
 
 /**
  * Kafka producer configuration for the Payment service.
- * <p>
- * This configuration sets up Kafka producers for two event types:
- * {@link OrderStatusUpdateEvent} and {@link ShipmentRequestEvent}.
- * It defines the necessary beans and serialization settings used for publishing messages to Kafka.
- * </p>
+ *
+ * <p>This configuration sets up Kafka producers specifically for the {@link PaymentEvent} type.
+ * It defines the necessary beans and serialization settings used for publishing messages to Kafka.</p>
  */
 @Configuration
 public class PaymentKafkaProducer {
@@ -46,42 +44,22 @@ public class PaymentKafkaProducer {
     }
 
     /**
-     * Creates a {@link ProducerFactory} for producing {@link OrderStatusUpdateEvent} messages.
+     * Creates a {@link ProducerFactory} for producing {@link PaymentEvent} messages.
      *
-     * @return a producer factory configured for {@code OrderStatusUpdateEvent}
+     * @return a producer factory configured for {@link PaymentEvent}
      */
     @Bean
-    public ProducerFactory<String, OrderStatusUpdateEvent> orderStatusUpdateProducerFactory() {
+    public ProducerFactory<String, PaymentEvent> paymentProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     /**
-     * Creates a {@link KafkaTemplate} for sending {@link OrderStatusUpdateEvent} messages.
+     * Creates a {@link KafkaTemplate} for sending {@link PaymentEvent} messages.
      *
-     * @return a Kafka template for {@code OrderStatusUpdateEvent}
+     * @return a Kafka template for {@link PaymentEvent}
      */
     @Bean
-    public KafkaTemplate<String, OrderStatusUpdateEvent> orderStatusUpdateKafkaTemplate() {
-        return new KafkaTemplate<>(orderStatusUpdateProducerFactory());
-    }
-
-    /**
-     * Creates a {@link ProducerFactory} for producing {@link ShipmentRequestEvent} messages.
-     *
-     * @return a producer factory configured for {@code ShipmentRequestEvent}
-     */
-    @Bean
-    public ProducerFactory<String, ShipmentRequestEvent> shipmentRequestProducerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
-    }
-
-    /**
-     * Creates a {@link KafkaTemplate} for sending {@link ShipmentRequestEvent} messages.
-     *
-     * @return a Kafka template for {@code ShipmentRequestEvent}
-     */
-    @Bean
-    public KafkaTemplate<String, ShipmentRequestEvent> shipmentRequestKafkaTemplate() {
-        return new KafkaTemplate<>(shipmentRequestProducerFactory());
+    public KafkaTemplate<String, PaymentEvent> paymentKafkaTemplate() {
+        return new KafkaTemplate<>(paymentProducerFactory());
     }
 }

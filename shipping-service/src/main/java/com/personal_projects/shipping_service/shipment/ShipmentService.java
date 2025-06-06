@@ -1,8 +1,7 @@
 package com.personal_projects.shipping_service.shipment;
 
-import com.personal_projects.common.Enums.OrderStatus;
-import com.personal_projects.common.Enums.ShippingStatus;
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
+import com.personal_projects.common.Enums.ShipmentStatus;
+import com.personal_projects.common.Events.ShipmentEvent;
 import com.personal_projects.shipping_service.data.entity.Shipment;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -12,9 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_STATUS_UPDATES_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.SHIPMENT_TOPIC;
 
 /**
  * Service class responsible for handling business logic related to shipments.
@@ -25,19 +23,19 @@ public class ShipmentService {
     private static final Logger logger = LoggerFactory.getLogger(ShipmentService.class);
 
     private final ShipmentRepository shipmentRepository;
-    private final KafkaTemplate<String, OrderStatusUpdateEvent> orderStatusUpdateKafkaTemplate;
+    private final KafkaTemplate<String, ShipmentEvent> shipmentKafkaTemplate;
 
 
     /**
      * Constructs the ShipmentService with required dependencies.
      *
      * @param shipmentRepository Repository for interacting with shipment data
-     * @param orderStatusUpdateKafkaTemplate Kafka template to publish order status updates
+     * @param shipmentKafkaTemplate Kafka template to publish order status updates
      */
     public ShipmentService(ShipmentRepository shipmentRepository,
-                           KafkaTemplate<String, OrderStatusUpdateEvent> orderStatusUpdateKafkaTemplate) {
+                           KafkaTemplate<String, ShipmentEvent> shipmentKafkaTemplate) {
         this.shipmentRepository = shipmentRepository;
-        this.orderStatusUpdateKafkaTemplate = orderStatusUpdateKafkaTemplate;
+        this.shipmentKafkaTemplate = shipmentKafkaTemplate;
     }
 
     /**
@@ -68,12 +66,12 @@ public class ShipmentService {
                 .orElseThrow(() -> new EntityNotFoundException("Shipment not found for orderId: " + orderId));
 
         if ( shipment.isInTransit() ) {
-            logger.warn("Shipment with orderId {} is not in PENDING status. Current status: {}", orderId, shipment.getShippingStatus());
+            logger.warn("Shipment with orderId {} is not in PENDING status. Current status: {}", orderId, shipment.getShipmentStatus());
             return;
         }
 
-        updateShipment(orderId, ShippingStatus.IN_TRANSIT, shipment);
-        sendOrderShipmentStatusUpdateMessage(orderId);
+        updateShipment(orderId, ShipmentStatus.IN_TRANSIT, shipment);
+        publishShipmentEvent(shipment.getShippingId(), orderId);
     }
 
     /**
@@ -81,23 +79,26 @@ public class ShipmentService {
      *
      * @param orderId the ID of the order whose shipment status is updated
      */
-    public void sendOrderShipmentStatusUpdateMessage(final long orderId) {
-        orderStatusUpdateKafkaTemplate.send(ORDER_STATUS_UPDATES_TOPIC, new OrderStatusUpdateEvent(orderId, OrderStatus.SHIPPED));
+    public void publishShipmentEvent(final String shipmentId, final long orderId) {
+        shipmentKafkaTemplate.send(SHIPMENT_TOPIC, new ShipmentEvent(shipmentId, orderId, ShipmentStatus.IN_TRANSIT));
     }
+
+
+
 
     /**
      * Updates the shipping status of a shipment.
      *
      * @param orderId        the order ID whose shipment should be updated
-     * @param shippingStatus new shipping status to set
+     * @param shipmentStatus new shipping status to set
      * @param shipment       the current shipment object
      */
     public void updateShipment(
-            final long orderId, final ShippingStatus shippingStatus, final Shipment shipment
+            final long orderId, final ShipmentStatus shipmentStatus, final Shipment shipment
     ) {
         shipmentRepository.updateStatusByOrderId(
                 orderId,
-                shippingStatus,
+                shipmentStatus,
                 shipment.getTrackingNumber(),
                 LocalDateTime.now()
         );

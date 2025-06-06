@@ -2,7 +2,7 @@ package com.personal_projects.order_service.util;
 
 import com.personal_projects.common.Enums.OrderStatus;
 import com.personal_projects.common.Events.OrderEvent;
-import com.personal_projects.order_service.data.dto.OrderRequest;
+import com.personal_projects.order_service.data.dto.OrderDTO;
 import com.personal_projects.order_service.data.entity.Order;
 
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class OrderMapper {
      * @param request the order request data
      * @return mapped Order entity with calculated totalAmount
      */
-    public static Order toOrder(OrderRequest request) {
+    public static Order toOrder(OrderDTO request) {
         return Order.builder()
                 .customerName(request.getCustomerName())
                 .productName(request.getProductName())

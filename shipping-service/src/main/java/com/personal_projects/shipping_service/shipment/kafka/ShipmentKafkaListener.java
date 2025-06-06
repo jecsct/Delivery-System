@@ -1,24 +1,21 @@
 package com.personal_projects.shipping_service.shipment.kafka;
 
-import com.personal_projects.common.Enums.OrderStatus;
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
-import com.personal_projects.common.Events.ShipmentRequestEvent;
+import com.personal_projects.common.Events.PaymentEvent;
+import com.personal_projects.common.Events.ShipmentEvent;
 import com.personal_projects.shipping_service.data.entity.Shipment;
 import com.personal_projects.shipping_service.shipment.ShipmentService;
 import com.personal_projects.shipping_service.util.ShipmentMapper;
-import jakarta.persistence.SequenceGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_STATUS_UPDATES_TOPIC;
-import static com.personal_projects.common.Configs.KafkaConfigs.SHIPMENT_REQUESTS_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.PAYMENT_TOPIC;
 
 /**
- * Kafka listener component for processing {@link ShipmentRequestEvent} messages.
- * <p>
- * When a shipment request event is received, a new {@link Shipment} is created in the database.
- * </p>
+ * Kafka listener for handling events related to shipments.
+ *
+ * <p>This listener consumes {@link PaymentEvent} messages from the Kafka topic
+ * defined by {@code PAYMENT_TOPIC} and processes them using the {@link ShipmentService}.</p>
  */
 @Component
 public class ShipmentKafkaListener {
@@ -26,9 +23,9 @@ public class ShipmentKafkaListener {
     private final ShipmentService shipmentService;
 
     /**
-     * Constructs the Kafka listener with a reference to the {@link ShipmentService}.
+     * Constructs a new {@code ShipmentKafkaListener} with the given {@link ShipmentService}.
      *
-     * @param shipmentService the service used to handle shipment-related logic.
+     * @param shipmentService the service responsible for shipment business logic
      */
     @Autowired
     public ShipmentKafkaListener(final ShipmentService shipmentService) {
@@ -36,18 +33,18 @@ public class ShipmentKafkaListener {
     }
 
     /**
-     * Kafka listener method for handling {@link ShipmentRequestEvent} messages.
+     * Kafka listener method that is invoked when a {@link PaymentEvent} is received from the configured topic.
+     * It processes the payment event and creates a shipment using the shipment service.
      *
-     * @param shipmentServiceEvent the incoming shipment request event from Kafka.
+     * @param paymentEvent the payment event received from Kafka
      */
     @KafkaListener(
-            topics = SHIPMENT_REQUESTS_TOPIC,
-            groupId = "groupId",
-            containerFactory = "kafkaListenerContainerFactory"
+            topics = PAYMENT_TOPIC,
+            groupId = "shipment-service-group",
+            containerFactory = "shipmentKafkaListenerContainerFactory"
     )
-    void listener(ShipmentRequestEvent shipmentServiceEvent) {
-        System.out.println("Listener Received: " + shipmentService);
-
-        shipmentService.createShipment(ShipmentMapper.mapToShipment(shipmentServiceEvent));
+    void listener(PaymentEvent paymentEvent) {
+        System.out.println("Listener Received: " + paymentEvent);
+        shipmentService.createShipment(ShipmentMapper.mapPaymentEventToShipment(paymentEvent));
     }
 }

@@ -1,23 +1,21 @@
 package com.personal_projects.order_service.order.kafka;
 
 import com.personal_projects.common.Enums.OrderStatus;
-import com.personal_projects.common.Events.OrderEvent;
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
+import com.personal_projects.common.Events.PaymentEvent;
+import com.personal_projects.common.Events.ShipmentEvent;
 import com.personal_projects.order_service.order.OrderService;
-import com.personal_projects.order_service.util.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_PAYMENT_REQUEST_TOPIC;
-import static com.personal_projects.common.Configs.KafkaConfigs.ORDER_STATUS_UPDATES_TOPIC;
+import static com.personal_projects.common.Configs.KafkaConfigs.*;
+
 
 /**
- * Kafka listener for handling {@link OrderStatusUpdateEvent} messages.
- * <p>
- * This component listens to messages from the Kafka topic related to order status updates.
- * Based on the content of the event, it updates the order's status using the {@link OrderService}.
- * </p>
+ * Kafka listener component for processing events related to order payments and shipments.
+ *
+ * <p>This class listens to Kafka topics for {@code PaymentEvent} and {@code ShipmentEvent} messages
+ * and updates the order status accordingly using the {@link OrderService}.</p>
  */
 @Component
 public class OrderKafkaListener {
@@ -25,9 +23,9 @@ public class OrderKafkaListener {
     private final OrderService orderService;
 
     /**
-     * Constructs the Kafka listener with a reference to the {@link OrderService}.
+     * Constructor for dependency injection of {@link OrderService}.
      *
-     * @param orderService the service used to update order statuses in the system.
+     * @param orderService the service responsible for handling order-related business logic
      */
     @Autowired
     public OrderKafkaListener(final OrderService orderService) {
@@ -35,26 +33,43 @@ public class OrderKafkaListener {
     }
 
     /**
-     * Handles incoming {@link OrderStatusUpdateEvent} messages from Kafka.
-     * <p>
-     * If the payment was successful, it sets the order status to {@link OrderStatus#PAID}.
-     * Otherwise, it sets the order status to {@link OrderStatus#FAILED}.
-     * </p>
+     * Kafka listener for processing {@link PaymentEvent} messages from the {@code PAYMENT_TOPIC}.
      *
-     * @param orderStatusUpdateEvent the event containing order ID and payment status.
+     * <p>If the payment was successful, the corresponding order's status is set to {@code PAID}.
+     * Otherwise, it is marked as {@code FAILED}.</p>
+     *
+     * @param paymentEvent the payment event consumed from Kafka
      */
     @KafkaListener(
-            topics = ORDER_STATUS_UPDATES_TOPIC,
-            groupId = "groupId",
-            containerFactory = "kafkaListenerContainerFactory"
+            topics = PAYMENT_TOPIC,
+            groupId = "order-service-group",
+            containerFactory = "paymentKafkaListenerContainerFactory"
     )
-    void listener(OrderStatusUpdateEvent orderStatusUpdateEvent) {
-        System.out.println("Listener Received: " + orderStatusUpdateEvent);
+    void listener(PaymentEvent paymentEvent) {
+        System.out.println("Listener Received: " + paymentEvent);
 
-        if (orderStatusUpdateEvent.paymentWasSuccessful()) {
-            orderService.updateOrderStatusById(orderStatusUpdateEvent.getOrderId(), OrderStatus.PAID);
+        if (paymentEvent.paymentWasSuccessful()) {
+            orderService.updateOrderStatusById(paymentEvent.getOrderId(), OrderStatus.PAID);
         } else {
-            orderService.updateOrderStatusById(orderStatusUpdateEvent.getOrderId(), OrderStatus.FAILED);
+            orderService.updateOrderStatusById(paymentEvent.getOrderId(), OrderStatus.FAILED);
         }
+    }
+
+    /**
+     * Kafka listener for processing {@link ShipmentEvent} messages from the {@code SHIPMENT_TOPIC}.
+     *
+     * <p>When a shipment event is received, the order status is updated to {@code SHIPPED}.</p>
+     *
+     * @param shipmentEvent the shipment event consumed from Kafka
+     */
+    @KafkaListener(
+            topics = SHIPMENT_TOPIC,
+            groupId = "order-service-group",
+            containerFactory = "shipmentKafkaListenerContainerFactory"
+    )
+    void listener(ShipmentEvent shipmentEvent) {
+        System.out.println("Listener Received: " + shipmentEvent);
+
+        orderService.updateOrderStatusById(shipmentEvent.getOrderId(), OrderStatus.SHIPPED);
     }
 }

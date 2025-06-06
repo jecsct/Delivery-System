@@ -1,6 +1,5 @@
 package com.personal_projects.shipping_service.shipment;
 
-import com.personal_projects.shipping_service.data.dto.ShipmentRequest;
 import com.personal_projects.shipping_service.data.entity.Shipment;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;

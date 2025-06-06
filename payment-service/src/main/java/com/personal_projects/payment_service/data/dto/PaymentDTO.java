@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequest {
+public class PaymentDTO {
     /** The ID of the order associated with the payment */
     private long orderId;
 

@@ -1,5 +1,5 @@
 package com.personal_projects.order_service.order;
-import com.personal_projects.order_service.data.dto.OrderRequest;
+import com.personal_projects.order_service.data.dto.OrderDTO;
 import com.personal_projects.order_service.data.entity.Order;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,12 +58,12 @@ public class OrderController {
     /**
      * Creates a new order.
      *
-     * @param orderRequest the {@link OrderRequest} object to be created
+     * @param orderDTO the {@link OrderDTO} object to be created
      */
     @Operation(summary = "Creates a new order")
     @PostMapping
-    public void createOrder(@RequestBody OrderRequest orderRequest){
-        orderService.createOrder(orderRequest);
+    public void createOrder(@RequestBody OrderDTO orderDTO){
+        orderService.createOrder(orderDTO);
     }
 
 }

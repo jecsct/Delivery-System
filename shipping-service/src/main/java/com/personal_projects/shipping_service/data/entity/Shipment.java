@@ -1,7 +1,7 @@
 package com.personal_projects.shipping_service.data.entity;
 
 
-import com.personal_projects.common.Enums.ShippingStatus;
+import com.personal_projects.common.Enums.ShipmentStatus;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,12 +26,12 @@ public class Shipment {
     private String shippingId;
 
     private long orderId;
-    private long paymentId;
+    private String paymentId;
 
     private String customerName;
     private String customerAddress;
 
-    private ShippingStatus shippingStatus; // Consider using an enum
+    private ShipmentStatus shipmentStatus; // Consider using an enum
 
     private String carrier;
     private String trackingNumber;
@@ -47,6 +47,6 @@ public class Shipment {
      * @return true if the shipping status is IN_TRANSIT, false otherwise
      */
     public boolean isInTransit() {
-        return this.shippingStatus.equals(ShippingStatus.IN_TRANSIT);
+        return this.shipmentStatus.equals(ShipmentStatus.IN_TRANSIT);
     }
 }

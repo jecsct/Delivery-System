@@ -1,25 +1,20 @@
 package com.personal_projects.common.Events;
 
+import com.personal_projects.common.Enums.ShipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShipmentRequestEvent {
+public class ShipmentEvent {
 
-    private long paymentId;
+    private String shipmentId;
 
     private long orderId;
 
-    private String customerName;
-
-    private String customerAddress;
-
-
+    private ShipmentStatus shipmentStatus;
 }

@@ -1,7 +1,7 @@
 package com.personal_projects.order_service.order.kafka;
 
-import com.personal_projects.common.Events.OrderEvent;
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
+import com.personal_projects.common.Events.PaymentEvent;
+import com.personal_projects.common.Events.ShipmentEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,26 +16,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Kafka consumer configuration for the Order Service.
- * <p>
- * This class defines how the Order Service consumes {@link OrderStatusUpdateEvent}
- * messages from Kafka. It sets up deserializers, consumer properties, and
- * the listener container factory.
- * </p>
+ * Configuration class for Kafka consumers in the Order Service.
+ *
+ * <p>This class defines beans to consume {@code PaymentEvent} and {@code ShipmentEvent} messages
+ * from Kafka topics using Spring Kafka's listener containers.</p>
+ *
+ * <p>Each event type has its own {@code ConsumerFactory} and {@code KafkaListenerContainerFactory}
+ * to support different payload deserialization types.</p>
  */
 @Configuration
 public class OrderKafkaConsumer {
 
     /**
-     * Kafka bootstrap servers, injected from application properties.
+     * Kafka bootstrap servers address, injected from application properties.
      */
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     /**
-     * Creates a configuration map for Kafka consumer.
+     * Basic Kafka consumer configuration.
      *
-     * @return a map containing the Kafka consumer configuration properties.
+     * @return a map of Kafka consumer properties.
      */
     public Map<String, Object> consumerConfig() {
         Map<String, Object> props = new HashMap<>();
@@ -43,38 +44,64 @@ public class OrderKafkaConsumer {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "groupId");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // Allows deserialization of any package
         return props;
     }
 
     /**
-     * Configures the {@link ConsumerFactory} used to deserialize
-     * {@link OrderStatusUpdateEvent} messages from Kafka.
+     * Creates a {@link ConsumerFactory} for {@code PaymentEvent} messages.
      *
-     * @return a consumer factory for String keys and OrderStatusUpdateEvent values.
+     * @return a {@code ConsumerFactory} that deserializes values into {@code PaymentEvent}.
      */
-
-
     @Bean
-    public ConsumerFactory<String, OrderStatusUpdateEvent> consumerFactory() {
+    public ConsumerFactory<String, PaymentEvent> paymentConsumerFactory() {
+        JsonDeserializer<PaymentEvent> deserializer = new JsonDeserializer<>(PaymentEvent.class);
+        deserializer.addTrustedPackages("*");
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
-                new JsonDeserializer<>(OrderStatusUpdateEvent.class)
+                deserializer
         );
     }
 
     /**
-     * Configures the Kafka listener container factory that creates
-     * listener containers for processing Kafka messages concurrently.
+     * Creates a {@link ConsumerFactory} for {@code ShipmentEvent} messages.
      *
-     * @return a Kafka listener container factory.
+     * @return a {@code ConsumerFactory} that deserializes values into {@code ShipmentEvent}.
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderStatusUpdateEvent> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, OrderStatusUpdateEvent> factory =
+    public ConsumerFactory<String, ShipmentEvent> shipmentConsumerFactory() {
+        JsonDeserializer<ShipmentEvent> deserializer = new JsonDeserializer<>(ShipmentEvent.class);
+        deserializer.addTrustedPackages("*");
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfig(),
+                new StringDeserializer(),
+                deserializer
+        );
+    }
+
+    /**
+     * Creates a {@link ConcurrentKafkaListenerContainerFactory} for handling {@code PaymentEvent} messages.
+     *
+     * @return a Kafka listener container factory configured for {@code PaymentEvent}.
+     */
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentEvent> paymentKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PaymentEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(paymentConsumerFactory());
+        return factory;
+    }
+
+    /**
+     * Creates a {@link ConcurrentKafkaListenerContainerFactory} for handling {@code ShipmentEvent} messages.
+     *
+     * @return a Kafka listener container factory configured for {@code ShipmentEvent}.
+     */
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, ShipmentEvent> shipmentKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ShipmentEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(shipmentConsumerFactory());
         return factory;
     }
 }

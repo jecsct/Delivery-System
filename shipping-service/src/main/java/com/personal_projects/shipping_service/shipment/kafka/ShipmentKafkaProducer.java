@@ -1,7 +1,8 @@
 package com.personal_projects.shipping_service.shipment.kafka;
 
 
-import com.personal_projects.common.Events.OrderStatusUpdateEvent;
+import com.personal_projects.common.Events.PaymentEvent;
+import com.personal_projects.common.Events.ShipmentEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +17,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 /**
  * Kafka producer configuration for the Shipment service.
- * <p>
- * This class sets up the necessary beans to send {@link OrderStatusUpdateEvent} messages to Kafka.
- * </p>
+ *
+ * <p>This configuration sets up the necessary beans to produce messages of type {@link ShipmentEvent}
+ * to Kafka. It defines the producer properties such as bootstrap servers and serializers,
+ * and exposes a {@link KafkaTemplate} bean to facilitate sending messages.</p>
  */
 @Configuration
 public class ShipmentKafkaProducer {
@@ -32,9 +35,10 @@ public class ShipmentKafkaProducer {
     private String bootstrapServers;
 
     /**
-     * Builds a map of configuration properties common to all Kafka producers.
+     * Builds a map of configuration properties used by Kafka producers.
      *
-     * @return a map of Kafka producer configuration properties.
+     * @return a map containing Kafka producer configuration properties including
+     * bootstrap servers and serializers for key and value.
      */
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -45,23 +49,23 @@ public class ShipmentKafkaProducer {
     }
 
     /**
-     * Creates a {@link ProducerFactory} for producing {@link OrderStatusUpdateEvent} messages.
+     * Creates a {@link ProducerFactory} configured for producing {@link ShipmentEvent} messages.
      *
-     * @return a producer factory configured for {@code OrderStatusUpdateEvent}.
+     * @return a producer factory for {@code ShipmentEvent}
      */
     @Bean
-    public ProducerFactory<String, OrderStatusUpdateEvent> orderStatusUpdateProducerFactory() {
+    public ProducerFactory<String, ShipmentEvent> shipmentProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     /**
-     * Creates a {@link KafkaTemplate} for sending {@link OrderStatusUpdateEvent} messages.
+     * Creates a {@link KafkaTemplate} bean to send {@link ShipmentEvent} messages to Kafka.
      *
-     * @return a Kafka template configured for {@code OrderStatusUpdateEvent}.
+     * @return a Kafka template for sending {@code ShipmentEvent} messages
      */
     @Bean
-    public KafkaTemplate<String, OrderStatusUpdateEvent> orderStatusUpdateKafkaTemplate() {
-        return new KafkaTemplate<>(orderStatusUpdateProducerFactory());
+    public KafkaTemplate<String, ShipmentEvent> shipmentKafkaTemplate() {
+        return new KafkaTemplate<>(shipmentProducerFactory());
     }
-
 }
+
